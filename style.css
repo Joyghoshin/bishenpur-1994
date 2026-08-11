@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #111;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.viewport {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  background: #1a120b;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+#bg-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 55%;                 /* Much smaller - far distance look */
+  height: auto;
+  max-height: 70%;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  pointer-events: none;
+  filter: brightness(0.95) contrast(1.05);
+  border-radius: 4px;
+  
+  /* Slow heartbeat animation */
+  animation: heartbeat 7s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(1.025);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Play Button */
+.player-bar {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.play-btn {
+  background: rgba(0, 0, 0, 0.75);
+  color: #f5e8d3;
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 14px 40px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: 0.25s;
+  font-family: system-ui, sans-serif;
+  letter-spacing: 1px;
+}
+
+.play-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.06);
+}
