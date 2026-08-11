@@ -8,6 +8,7 @@ body {
   background: #111;
   overflow: hidden;
   height: 100vh;
+  width: 100vw;
 }
 
 .viewport {
@@ -27,15 +28,15 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 55%;                 /* Much smaller - far distance look */
-  height: auto;
-  max-height: 70%;
-  object-fit: contain;
+  width: auto;                  /* Lets the width adjust naturally */
+  height: 100vh;                /* Locks height to full screen vertically */
+  max-width: none;
+  object-fit: cover;
   transform: translate(-50%, -50%);
   user-select: none;
   pointer-events: none;
   filter: brightness(0.95) contrast(1.05);
-  border-radius: 4px;
+  border-radius: 0;
   
   /* Slow heartbeat animation */
   animation: heartbeat 7s ease-in-out infinite;
