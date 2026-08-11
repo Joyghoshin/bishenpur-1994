@@ -8,15 +8,17 @@
 </head>
 <body>
 
-  <div class="player-bar">
-    <button id="playBtn" class="play-btn">Play</button>
-  </div>
-
   <div class="viewport" id="viewport">
     <img src="school-gate.jpg" id="bg-image" alt="Bishenpur High School Gate" draggable="false">
   </div>
 
- <audio id="bgMusic"></audio>
+  <div class="player-bar">
+    <button id="playBtn" class="play-btn">Play</button>
+  </div>
+
+  <!-- Audio elements for both song1 and song2 -->
+  <audio id="song1" src="song1.mp3" preload="auto"></audio>
+  <audio id="song2" src="song2.mp3" preload="auto"></audio>
 
   <script src="script.js"></script>
 </body>

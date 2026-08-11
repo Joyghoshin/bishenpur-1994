@@ -1,48 +1,58 @@
-const viewport = document.getElementById('viewport');
-const img = document.getElementById('bg-image');
-const playBtn = document.getElementById('playBtn');
-const bgMusic = document.getElementById('bgMusic');
+const playBtn = document.getElementById("playBtn");
+const song1 = document.getElementById("song1");
+const song2 = document.getElementById("song2");
 
-// ===== Your two songs =====
-const songs = [
-  "song1.mp3",
-  "song2.mp3"
-];
-
-let currentSongIndex = 0;
 let isPlaying = false;
 
-// Load the first song
-bgMusic.src = songs[currentSongIndex];
+if (playBtn && song1) {
+  playBtn.addEventListener("click", () => {
+    if (!isPlaying) {
+      song1.play().then(() => {
+        playBtn.textContent = "Pause";
+        isPlaying = true;
+      }).catch(err => {
+        console.log("Audio playback failed:", err);
+      });
+    } else {
+      song1.pause();
+      if (song2) song2.pause();
+      playBtn.textContent = "Play";
+      isPlaying = false;
+    }
+  });
 
-// When one song ends → play the next one (loop)
-bgMusic.addEventListener('ended', () => {
-  currentSongIndex = (currentSongIndex + 1) % songs.length;
-  bgMusic.src = songs[currentSongIndex];
-  bgMusic.play();
-});
+  // When song1 finishes, automatically play song2
+  song1.addEventListener("ended", () => {
+    if (song2) {
+      song2.play().catch(err => console.log("Song 2 playback failed:", err));
+    } else {
+      playBtn.textContent = "Play";
+      isPlaying = false;
+    }
+  });
 
-// Play / Pause button
-playBtn.addEventListener('click', () => {
-  if (isPlaying) {
-    bgMusic.pause();
-    playBtn.textContent = "Play";
-  } else {
-    bgMusic.play();
-    playBtn.textContent = "Pause";
+  // When song2 finishes, reset the play button
+  if (song2) {
+    song2.addEventListener("ended", () => {
+      playBtn.textContent = "Play";
+      isPlaying = false;
+    });
   }
-  isPlaying = !isPlaying;
-});
+}
 
-// ===== Drag / Pan Logic =====
+// Drag / Pan functionality for the background image viewport
+const viewport = document.getElementById("viewport");
+const img = document.getElementById("bg-image");
+
 let isDragging = false;
-let startX, startY;
-let currentX = 0;
-let currentY = 0;
+let startX = 0, startY = 0;
+let currentX = 0, currentY = 0;
 
 function startDrag(e) {
   isDragging = true;
-  img.style.animationPlayState = 'paused';
+  if (img) {
+    img.style.animationPlayState = 'paused';
+  }
   const point = e.touches ? e.touches[0] : e;
   startX = point.clientX - currentX;
   startY = point.clientY - currentY;
@@ -60,20 +70,24 @@ function drag(e) {
   currentX = Math.max(Math.min(currentX, maxX), -maxX);
   currentY = Math.max(Math.min(currentY, maxY), -maxY);
 
-  img.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) scale(1.01)`;
+  if (img) {
+    img.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) scale(1.01)`;
+  }
 }
 
 function endDrag() {
   isDragging = false;
-  img.style.animationPlayState = 'running';
+  if (img) {
+    img.style.animationPlayState = 'running';
+  }
 }
 
-// Mouse events
-viewport.addEventListener('mousedown', startDrag);
-window.addEventListener('mousemove', drag);
-window.addEventListener('mouseup', endDrag);
+if (viewport) {
+  viewport.addEventListener('mousedown', startDrag);
+  window.addEventListener('mousemove', drag);
+  window.addEventListener('mouseup', endDrag);
 
-// Touch events (mobile)
-viewport.addEventListener('touchstart', startDrag, { passive: false });
-window.addEventListener('touchmove', drag, { passive: false });
-window.addEventListener('touchend', endDrag);
+  viewport.addEventListener('touchstart', startDrag);
+  window.addEventListener('touchmove', drag);
+  window.addEventListener('touchend', endDrag);
+}
