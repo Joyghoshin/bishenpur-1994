@@ -12,11 +12,37 @@
     <img src="school-gate.jpg" id="bg-image" alt="Bishenpur High School Gate" draggable="false">
   </div>
 
+  <!-- Floating Pill Music Player Bar -->
   <div class="player-bar">
-    <button id="playBtn" class="play-btn">Play</button>
+    <div class="music-card">
+      <div class="track-info">
+        <img src="school-gate.jpg" alt="Album Art" class="album-art">
+        <div class="track-text">
+          <span class="track-title" id="track-title">Bishenpur Memories</span>
+          <span class="track-artist">Class of '94 Official Track</span>
+        </div>
+      </div>
+      
+      <div class="player-center">
+        <div class="progress-container" id="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="time-container">
+          <span id="current-time">0:00</span> / <span id="total-duration">0:00</span>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <button id="playBtn" class="pill-play-btn">
+          <svg id="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- Audio elements for both song1 and song2 -->
+  <!-- Both songs linked for sequential playback -->
   <audio id="song1" src="song1.mp3" preload="auto"></audio>
   <audio id="song2" src="song2.mp3" preload="auto"></audio>
 
