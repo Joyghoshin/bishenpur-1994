@@ -1,20 +1,24 @@
 const audio1 = document.getElementById('audio1');
+const audio2 = document.getElementById('audio2');
 const playIcon = document.getElementById('playIcon');
 const timeDisplay = document.getElementById('timeDisplay');
+const progressBar = document.getElementById('progressBar');
+const progressContainer = document.getElementById('progressContainer');
+const trackTitle = document.getElementById('trackTitle');
+const trackSub = document.getElementById('trackSub');
 
-function togglePlay() {
-    if (audio1.paused) {
-        audio1.play().then(() => {
-            playIcon.textContent = '❚❚';
-        }).catch(error => {
-            console.error("Playback failed:", error);
-            alert("Unable to play 'song1.mp3'. Please check if the audio file exists.");
-        });
-    } else {
-        audio1.pause();
-        playIcon.textContent = '▶';
+let activeAudio = 1; // 1 for song1, 2 for song2
+let totalDuration = 0;
+
+// Calculate total duration once metadata is loaded for both tracks
+function calculateTotalDuration() {
+    if (!isNaN(audio1.duration) && !isNaN(audio2.duration)) {
+        totalDuration = audio1.duration + audio2.duration;
     }
 }
+
+audio1.addEventListener('loadedmetadata', calculateTotalDuration);
+audio2.addEventListener('loadedmetadata', calculateTotalDuration);
 
 function formatTime(seconds) {
     if (isNaN(seconds)) return "0:00";
@@ -23,19 +27,99 @@ function formatTime(seconds) {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-audio1.addEventListener('loadedmetadata', () => {
-    timeDisplay.textContent = `0:00 / ${formatTime(audio1.duration)}`;
+function togglePlay() {
+    const currentAudio = activeAudio === 1 ? audio1 : audio2;
+
+    if (currentAudio.paused) {
+        currentAudio.play().then(() => {
+            playIcon.textContent = '❚❚';
+        }).catch(error => {
+            console.error("Playback failed:", error);
+            alert("Unable to play audio tracks. Check file names.");
+        });
+    } else {
+        currentAudio.pause();
+        playIcon.textContent = '▶';
+    }
+}
+
+// Track 1 ending -> automatically transition to Track 2
+audio1.addEventListener('ended', () => {
+    audio1.currentTime = 0;
+    activeAudio = 2;
+    trackTitle.textContent = "Bishenpur Ambient";
+    trackSub.textContent = "Playing Song 2";
+    audio2.play().catch(err => console.log(err));
 });
+
+// Track 2 ending -> loop back to Track 1
+audio2.addEventListener('ended', () => {
+    audio2.currentTime = 0;
+    activeAudio = 1;
+    trackTitle.textContent = "Bishenpur Memories";
+    trackSub.textContent = "Playing Song 1";
+    audio1.play().catch(err => console.log(err));
+});
+
+// Unified time updates combining both tracks into one 9+ min progress indicator
+function handleTimeUpdate() {
+    if (!totalDuration) calculateTotalDuration();
+
+    let cumulativeCurrentTime = 0;
+    if (activeAudio === 1) {
+        cumulativeCurrentTime = audio1.currentTime;
+    } else {
+        cumulativeCurrentTime = audio1.duration + audio2.currentTime;
+    }
+
+    if (totalDuration > 0) {
+        const percent = (cumulativeCurrentTime / totalDuration) * 100;
+        progressBar.style.width = percent + '%';
+        timeDisplay.textContent = `${formatTime(cumulativeCurrentTime)} / ${formatTime(totalDuration)}`;
+    }
+}
 
 audio1.addEventListener('timeupdate', () => {
-    const current = formatTime(audio1.currentTime);
-    const total = audio1.duration ? formatTime(audio1.duration) : '0:00';
-    timeDisplay.textContent = `${current} / ${total}`;
+    if (activeAudio === 1) handleTimeUpdate();
 });
 
-audio1.addEventListener('ended', () => {
-    playIcon.textContent = '▶';
+audio2.addEventListener('timeupdate', () => {
+    if (activeAudio === 2) handleTimeUpdate();
 });
+
+// Unified scrubbing across both tracks
+function seekAudio(event) {
+    if (!totalDuration) return;
+    const width = progressContainer.clientWidth;
+    const clickX = event.offsetX;
+    const clickPercent = clickX / width;
+    const targetTime = clickPercent * totalDuration;
+
+    if (targetTime <= audio1.duration) {
+        // Switch to or stay on Track 1
+        if (activeAudio === 2) {
+            audio2.pause();
+            audio2.currentTime = 0;
+            activeAudio = 1;
+            trackTitle.textContent = "Bishenpur Memories";
+            trackSub.textContent = "Playing Song 1";
+            if (!audio1.paused) audio1.play();
+        }
+        audio1.currentTime = targetTime;
+    } else {
+        // Switch to or stay on Track 2
+        if (activeAudio === 1) {
+            audio1.pause();
+            audio1.currentTime = 0;
+            activeAudio = 2;
+            trackTitle.textContent = "Bishenpur Ambient";
+            trackSub.textContent = "Playing Song 2";
+            if (!audio2.paused) audio2.play();
+        }
+        audio2.currentTime = targetTime - audio1.duration;
+    }
+    handleTimeUpdate();
+}
 
 // --- FULL-SCREEN DRAGGING LOGIC (Mouse & Touch Supported) ---
 const videoElement = document.getElementById('schoolVideo');

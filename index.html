@@ -22,19 +22,26 @@
                     </video>
                 </div>
                 <div class="track-text">
-                    <span class="track-title">Bishenpur Memories</span>
-                    <span class="track-sub">Class of '94 Official Track</span>
+                    <span class="track-title" id="trackTitle">Bishenpur Memories</span>
+                    <span class="track-sub" id="trackSub">Playing Song 1</span>
                 </div>
+            </div>
+
+            <div class="pill-progress-section">
+                <div class="progress-bar-container" id="progressContainer" onclick="seekAudio(event)">
+                    <div id="progressBar" class="progress-bar-fill"></div>
+                </div>
+                <span id="timeDisplay">0:00 / 0:00</span>
             </div>
             
             <div class="pill-controls">
-                <span id="timeDisplay">0:00 / 0:00</span>
                 <button class="pill-play-btn" id="playBtn" onclick="togglePlay()">
                     <span id="playIcon">▶</span>
                 </button>
             </div>
 
             <audio id="audio1" src="song1.mp3" preload="auto"></audio>
+            <audio id="audio2" src="song2.mp3" preload="auto"></audio>
         </div>
     </div>
 
